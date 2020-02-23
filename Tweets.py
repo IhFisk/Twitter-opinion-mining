@@ -6,6 +6,7 @@ class CButton:
         self.value = value
         self.button = button
         
+"récupère les 100 derniers tweets contenant un mot-clé passé en paramètre et les écris dans un fichier texte"
 def getTweetsFromKeyword(keyword):
     search_results = api.search(q=keyword, count=100, geocode="46.27155,2.627197,350km",lang="fr")
     with open("result.txt", "a", encoding="utf-8") as f:
@@ -23,6 +24,7 @@ def searchTweets(checkButtons):
              print(search)
              getTweetsFromKeyword(search)
 
+"récupère les tendances proche d'un endroit passé en paramètre"
 def getTrends(WOEID):
 	trendsP = api.trends_place(WOEID) #Renvoi les tendances sous forme de JSON
 	data = trendsP[0] #Récupère le contenu du JSON
