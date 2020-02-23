@@ -7,12 +7,12 @@ class CButton:
         self.button = button
         
 def getTweetsFromKeyword(keyword):
-    search_results = api.search(q=keyword, count=100)
+    search_results = api.search(q=keyword, count=100, result_type="mixed", tweet_mode ="extended")
     with open("result.txt", "a", encoding="utf-8") as f:
         for i in search_results:
-            print(i.text)
+            print(i.full_text)
             print('\n')
-            f.write(i.text)
+            f.write(i.full_text)
             f.write('\n------------------------------------------------------------\n')
     f.close()
 
