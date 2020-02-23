@@ -8,12 +8,12 @@ class CButton:
         
 "récupère les 100 derniers tweets contenant un mot-clé passé en paramètre et les écris dans un fichier texte"
 def getTweetsFromKeyword(keyword):
-    search_results = api.search(q=keyword, count=100, geocode="46.27155,2.627197,350km",lang="fr")
+    search_results = api.search(q=keyword, count=100, geocode="46.27155,2.627197,350km",lang="fr", tweet_mode ="extended")
     with open("result.txt", "a", encoding="utf-8") as f:
         for i in search_results:
-            print(i.text)
+            print(i.full_text)
             print('\n')
-            f.write(i.text)
+            f.write(i.full_text)
             f.write('\n------------------------------------------------------------\n')
     f.close()
 
