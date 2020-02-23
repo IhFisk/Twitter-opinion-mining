@@ -7,7 +7,7 @@ class CButton:
         self.button = button
         
 def getTweetsFromKeyword(keyword):
-    search_results = api.search(q=keyword, count=100)
+    search_results = api.search(q=keyword, count=100, geocode="46.27155,2.627197,350km",lang="fr")
     with open("result.txt", "a", encoding="utf-8") as f:
         for i in search_results:
             print(i.text)
