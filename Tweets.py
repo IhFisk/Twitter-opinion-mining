@@ -7,13 +7,19 @@ class CButton:
         self.button = button
         
 def getTweetsFromKeyword(keyword):
-    search_results = api.search(q=keyword, count=100, result_type="mixed", tweet_mode ="extended")
+    keyword = keyword + " -filter:retweets"
     with open("result.txt", "a", encoding="utf-8") as f:
-        for i in search_results:
-            print(i.full_text)
-            print('\n')
-            f.write(i.full_text)
-            f.write('\n------------------------------------------------------------\n')
+        search_results = api.search(q=keyword, count=100, result_type="recent", tweet_mode ="extended", lang ="fr")
+        for x in range(1,100):
+            for i in search_results:
+                print(i.id)
+                print(i.full_text)
+                print('\n')
+                f.write(i.id_str)
+                f.write(i.full_text)
+                f.write('\n------------------------------------------------------------\n')
+                maxid = i.id
+            search_results  = api.search(q=keyword, count=100, result_type="recent", tweet_mode ="extended", max_id = maxid)
     f.close()
 
 def searchTweets(checkButtons):
