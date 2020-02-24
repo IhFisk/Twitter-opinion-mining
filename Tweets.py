@@ -8,15 +8,30 @@ class CButton:
         
 "récupère les 100 derniers tweets contenant un mot-clé passé en paramètre et les écris dans un fichier texte"
 def getTweetsFromKeyword(keyword):
-    search_results = api.search(q=keyword, count=100, geocode="46.27155,2.627197,350km",lang="fr", tweet_mode ="extended")
+    keyword = keyword + " -filter:retweets"
     with open("result.txt", "a", encoding="utf-8") as f:
-        for i in search_results:
-            print(i.full_text)
-            print('\n')
-            f.write(i.full_text)
-            f.write('\n------------------------------------------------------------\n')
+        search_results = api.search(q=keyword, count=100, geocode="46.27155,2.627197,350km",result_type="recent", lang="fr", tweet_mode ="extended")
+        maxid = 0
+        c = 0
+        for x in range(1,100):
+            for i in search_results:
+                if(maxid != i.id):
+                    c+=1
+                    print(c)
+                    print(i.id)
+                    print(i.full_text)
+                    print('\n')
+                    f.write(i.id_str + " ")
+                    f.write(i.full_text)
+                    f.write('\n------------------------------------------------------------\n')
+                    maxid = i.id
+                else:
+                    print(i.id)
+                    f.close()
+                    return
+            search_results  = api.search(q=keyword, count=100, result_type="recent", tweet_mode ="extended", max_id = maxid-1)
     f.close()
-
+    
 def searchTweets(checkButtons):
      for cb in checkButtons:
          if cb.value.get():
@@ -32,10 +47,10 @@ def getTrends(WOEID):
 	names = [trend['name'] for trend in trends] #Récupère l'élément 'name' de chaque tendance
 	return names
     
-CONSUMER_KEY = 'tRdGwCfgXhXji5B61iJG3YabW'
-CONSUMER_SECRET = 'YM6abr5ro8UYozbhg7PrDxari3zZVEnfHGipdlGo8F923JsY1c'
-ACCESS_KEY = '874999178056933376-hun4QxdS5DR7oypJUR610IojjgcyL6S'
-ACCESS_SECRET = '69vlQ3LfENLkkymsNEgjYzKeNqxraHMdJYUBnT34RVWLw'
+CONSUMER_KEY = 'v2pSMP8Qq6jpLhk731RdMGSvA'
+CONSUMER_SECRET = 'VLkKvIU2rSh6P5c8suoU8UGLS4NwtEiwOEhqq5W7pbKfe3Bz7P'
+ACCESS_KEY = '1571137290-g61gc41oZtpETZIg2Q4KVP6XVYSNvMzSk57mKm1'
+ACCESS_SECRET = 'iQKVmVk6Vg8SdaXkDhkuAYGHBUB3jpcyXMCXLy9n3rCXa'
 
 PARIS_WOEID = 615702
 
