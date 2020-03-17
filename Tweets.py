@@ -32,9 +32,12 @@ def getTweetsFromKeyword(keyword):
                         f.close()
                         return
                     search_results  = api.search(q=k, count=100, result_type="recent", lang="en", tweet_mode ="extended", max_id = maxid-1)
-                    f.write("!!trendEnd!!\n")
-                    f.close()
+            f.write("!!trendEnd!!\n")
+            f.close()
+            print("End of search")
+            return
         except tweepy.RateLimitError:
+            print("Rate limit exceeded")
             f.write("!!trendEnd!!\n")            
             f.close()
             return
