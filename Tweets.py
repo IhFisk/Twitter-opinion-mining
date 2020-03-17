@@ -9,40 +9,94 @@ class CButton:
         
 def getTweetsFromKeyword(keyword):
     k = keyword + " -filter:retweets"
-    afinn = Afinn(language='fr')
     with open("result.txt", "a", encoding="utf-8") as f:
-        search_results = api.search(q=k, count=100, geocode="46.27155,2.627197,350km",result_type="recent", lang="fr", tweet_mode ="extended")
-        maxid = 0
-        c = 0
-        for x in range(1,100):
-            print(x)
-            print("x")
-            for i in search_results:
-                if(maxid != i.id):
-                    c+=1
-                    print(c)
-                    print(i.retweet_count)
-                    print(i.favorite_count)
-                    print(i.id)
-                    print(i.full_text)
-                    print(afinn.score(i.full_text))
-                    print('\n')
-                    f.write(i.id_str + " ")
-                    f.write(i.full_text)
-                    f.write('\n------------------------------------------------------------\n')
-                    maxid = i.id
-                else:
-                    print(i.id)
+        f.write("!!trend!! = " + keyword + "\n")
+        try:
+            search_results = api.search(q=k, count=100,result_type="recent", lang="en", tweet_mode ="extended")
+            maxid = 0
+            for x in range(1,100):
+                for i in search_results:
+                    if(maxid != i.id):
+                        #print(i.retweet_count)
+                        #print(i.favorite_count)
+                        #print(i.id)
+                        #print(i.full_text)
+                        f.write("!!id!! = " + str(i.id_str) + "\n")
+                        f.write("!!rt!! = " + str(i.retweet_count) + "\n")
+                        f.write("!!fav!! = " + str(i.favorite_count) + "\n")
+                        f.write(i.full_text)
+                        f.write("\n!!tweetEnd!!\n")
+                        maxid = i.id
+                    else:
+                        print(i.id)
+                        f.close()
+                        return
+                    search_results  = api.search(q=k, count=100, result_type="recent", lang="en", tweet_mode ="extended", max_id = maxid-1)
+                    f.write("!!trendEnd!!\n")
                     f.close()
-                    return
-                search_results  = api.search(q=k, count=100, geocode="46.27155,2.627197,350km",result_type="recent", lang="fr", tweet_mode ="extended", max_id = maxid-1)
-        f.close()
+        except tweepy.RateLimitError:
+            f.write("!!trendEnd!!\n")            
+            f.close()
+            return
+        except:
+            print("End: file closed or rate limit exceeded")
+            return 
+
+           
+def readAndScoreTweets():
+    afinn = Afinn(language='en')
+    with open("result.txt", "r", encoding="utf-8") as f:
+        for ligne in f.readlines():
+            if("!!trend!! = " in ligne):
+                nbTweets = 0
+                posTweets = 0
+                negTweets = 0
+                score = 0
+                idt = 0
+                fav = 0
+                rt = 0
+                text = ""
+                trend = ligne.partition("!!trend!! = ")[2]
+                print("\nTrend : " + trend)
+            elif("!!trendEnd!!" in ligne):
+                print("\nResultats sur la tendance " + trend)
+                print("Avis negatifs : ",negTweets,"\n")
+                print("Avis positifs : ",posTweets,"\n")
+                if(nbTweets != 0):
+                    print("Score moyen : ",score/nbTweets,"\n")
+            else:
+                if("!!id!! = " in ligne):
+                    text = ""
+                    nbTweets += 1
+                    idt = ligne.partition("!!id!! = ")[2]
+                    idt = int(idt)
+                    print("Id : ", idt)
+                elif("!!rt!! = " in ligne):
+                    rt = ligne.partition("!!rt!! = ")[2]
+                    rt = int(rt)
+                    print("Rt : ", rt)
+                elif("!!fav!! = " in ligne):
+                    fav = ligne.partition("!!fav!! = ")[2]
+                    fav = int(fav)
+                    print("Fav : ", fav)
+                elif("!!tweetEnd!!" in ligne):
+                    print(text)
+                    t_score = afinn.score(text)
+                    print("Score : ", t_score, "\n")
+                    score += t_score
+                    if(t_score > 0):
+                        posTweets += 1
+                    elif(t_score < 0):
+                        negTweets += 1
+                else:
+                    text += ligne
+
 
 def searchTweets(checkButtons):
      for cb in checkButtons:
          if cb.value.get():
              search = cb.button.cget("text")
-             print(search)
+             print("Trend:" + search)
              getTweetsFromKeyword(search)
 
 def getTrends(WOEID):
@@ -84,6 +138,6 @@ for name in names:
 searchButton = tk.Button(top, text ="Search tweets", command = lambda: searchTweets(checkbuttons))
 searchButton.grid(row = 11,column = 1)
 
-
-
+readButton = tk.Button(top, text = "Read and Score tweets", command = readAndScoreTweets)
+readButton.grid(row = 11, column = 3)
 top.mainloop()
