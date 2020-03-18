@@ -54,6 +54,7 @@ def readAndScoreTweets():
                 nbTweets = 0
                 posTweets = 0
                 negTweets = 0
+                neuTweets = 0
                 score = 0
                 idt = 0
                 fav = 0
@@ -63,6 +64,7 @@ def readAndScoreTweets():
                 print("\nTrend : " + trend)
             elif("!!trendEnd!!" in ligne):
                 print("\nResultats sur la tendance " + trend)
+                print("Avis neutres : ",neuTweets,"\n")
                 print("Avis negatifs : ",negTweets,"\n")
                 print("Avis positifs : ",posTweets,"\n")
                 if(nbTweets != 0):
@@ -70,7 +72,6 @@ def readAndScoreTweets():
             else:
                 if("!!id!! = " in ligne):
                     text = ""
-                    nbTweets += 1
                     idt = ligne.partition("!!id!! = ")[2]
                     idt = int(idt)
                     print("Id : ", idt)
@@ -88,9 +89,13 @@ def readAndScoreTweets():
                     print("Score : ", t_score, "\n")
                     score += t_score
                     if(t_score > 0):
+                        nbTweets += 1
                         posTweets += 1
                     elif(t_score < 0):
+                        nbTweets += 1
                         negTweets += 1
+                    else:
+                        neuTweets += 1
                 else:
                     text += ligne
 
@@ -115,6 +120,7 @@ ACCESS_KEY = '874999178056933376-4OyTKX8gneHJ93yUr6j8XPcUjzAmhZ8'
 ACCESS_SECRET = 'GtOFxjeG4vxGKtR3dk6zDX6bR701jgU9DiTQAET2FhoTi'
 
 PARIS_WOEID = 615702
+NEW_YORK_WOEID = 2459115
 
 auth = tweepy.auth.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
 auth.set_access_token(ACCESS_KEY, ACCESS_SECRET)
